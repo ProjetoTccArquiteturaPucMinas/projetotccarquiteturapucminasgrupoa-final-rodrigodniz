@@ -4,7 +4,7 @@
 Este projeto faz parte de um experimento acadêmico para avaliar esforço de compreensão e esforço de modificação em diferentes arquiteturas de software.
 
 ## Sua tarefa
-1. Identificar a arquitetura usada no projeto.
+1. Identificar a arquitetura usada no projeto. -> Arquitetura em Camadas (4-Tier)
 2. Justificar com base na estrutura do código.
 3. Identificar a classe que deve ser alterada
 4. Implementar a feature de cálculo de descontos no carrinho.

@@ -1,6 +1,7 @@
 package com.example.marketplace.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +43,58 @@ public class ServicoCarrinho {
         BigDecimal subtotal = itens.stream()
                 .map(ItemCarrinho::calcularSubtotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        int totalItens = itens.stream()
+                .mapToInt(ItemCarrinho::getQuantidade)
+                .sum();
+
+        BigDecimal descontoQuantidade = BigDecimal.ZERO;
+        if (totalItens == 2) {
+            descontoQuantidade = BigDecimal.valueOf(5);
+        } else if (totalItens == 3) {
+            descontoQuantidade = BigDecimal.valueOf(7);
+        } else if (totalItens >= 4) {
+            descontoQuantidade = BigDecimal.valueOf(10);
+        }
+
+        BigDecimal descontoCategoria = BigDecimal.ZERO;
+        for (ItemCarrinho item : itens) {
+            BigDecimal descontoItemCategoria = BigDecimal.ZERO;
+            
+            switch (item.getProduto().getCategoria()) {
+                case CAPINHA:
+                    descontoItemCategoria = BigDecimal.valueOf(3);
+                    break;
+                case CARREGADOR:
+                    descontoItemCategoria = BigDecimal.valueOf(5);
+                    break;
+                case FONE:
+                    descontoItemCategoria = BigDecimal.valueOf(3);
+                    break;
+                case PELICULA:
+                    descontoItemCategoria = BigDecimal.valueOf(2);
+                    break;
+                case SUPORTE:
+                    descontoItemCategoria = BigDecimal.valueOf(2);
+                    break;
+            }
+            
+            descontoCategoria = descontoCategoria.add(
+                    descontoItemCategoria.multiply(BigDecimal.valueOf(item.getQuantidade()))
+            );
+        }
+
+        BigDecimal percentualDesconto = descontoQuantidade.add(descontoCategoria);
+        
+        if (percentualDesconto.compareTo(BigDecimal.valueOf(25)) > 0) {
+            percentualDesconto = BigDecimal.valueOf(25);
+        }
+
+        BigDecimal valorDesconto = subtotal
+                .multiply(percentualDesconto)
+                .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+
+        BigDecimal total = subtotal.subtract(valorDesconto);
 
         return new ResumoCarrinho(itens, subtotal, percentualDesconto, valorDesconto, total);
     }
